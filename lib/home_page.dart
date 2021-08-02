@@ -1,12 +1,13 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'feed_widget.dart';
 
 class HomePage extends StatelessWidget {
-//  final FirebaseUser user;
+  final FirebaseUser user;
 
-//  HomePage(this.user);
+  HomePage(this.user);
 
   @override
   Widget build(BuildContext context) {

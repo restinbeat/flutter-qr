@@ -6,9 +6,9 @@ import 'create_page.dart';
 import 'detail_post_page.dart';
 
 class SearchPage extends StatelessWidget {
-//  final FirebaseUser user;
+  final FirebaseUser user;
 
-//  SearchPage(this.user);
+  SearchPage(this.user);
 
   @override
   Widget build(BuildContext context) {
