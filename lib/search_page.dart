@@ -1,3 +1,6 @@
+// import 'dart:js';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -30,16 +33,27 @@ class SearchPage extends StatelessWidget {
   Widget _buildBody(context) {
     print('search_page created');
     return Scaffold(
-      body: GridView.builder(
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-            childAspectRatio: 1.0,
-            mainAxisSpacing: 1.0,
-            crossAxisSpacing: 1.0),
-        itemCount: 3,
-        itemBuilder: (BuildContext context, int index) {
-          return _buildListItem();
-        },
+      body: StreamBuilder<QuerySnapshot>(
+        // 컬렉션 지칭가능 : post에 있는 모든 데이터를 가져옴
+          stream: Firestore.instance.collection('post').snapshots(),
+          builder: (context, snapshot) {
+            // 데이터가 없다면
+            if (!snapshot.hasData) {
+              // 빙글 도는 로딩
+              return Center(child: CircularProgressIndicator(),);
+            }
+            return GridView.builder(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3, // 3열
+                  childAspectRatio: 1.0, // 1:1
+                  mainAxisSpacing: 1.0,  // 1:1 정사각형 의미
+                  crossAxisSpacing: 1.0), // 1 간격
+              itemCount: snapshot.data.documents.length,
+              itemBuilder: (BuildContext context, int index) {
+                return _buildListItem(context, snapshot.data.documents[index]);
+              },
+            );
+          }
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.blueAccent,
@@ -47,16 +61,32 @@ class SearchPage extends StatelessWidget {
         onPressed: () {
           print('눌림');
           Navigator.of(context).push(MaterialPageRoute(
-              builder: (BuildContext context) => CreatePage()));
+              builder: (BuildContext context) => CreatePage(user)));
         },
       ),
     );
   }
 
-  Widget _buildListItem() {
-    return Image.network(
-      '',
-      fit: BoxFit.cover,
+  Widget _buildListItem(BuildContext context, DocumentSnapshot document) {
+    // InkWell 클릭 효과
+    return Hero(
+      tag: document.documentID,
+      child: Material(
+        child: InkWell(
+          onTap: () {
+            // print('click');
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => DetailPostPage(document, user)),
+            );
+
+          },
+          child: Image.network(
+            document['photoUrl'],
+            fit: BoxFit.cover,
+          ),
+        ),
+      ),
     );
   }
 }
