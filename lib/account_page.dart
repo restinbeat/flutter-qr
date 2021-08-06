@@ -1,12 +1,15 @@
+import 'package:chapter10/login_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class AccountPage extends StatelessWidget {
   final FirebaseUser user;
 
   AccountPage(this.user);
-
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +46,7 @@ class AccountPage extends StatelessWidget {
                   child: GestureDetector(
                     onTap: () => print('이미지 클릭'),
                     child: CircleAvatar(
-                      backgroundImage: NetworkImage(''),
+                      backgroundImage: NetworkImage(user.photoUrl),
                     ),
                   ),
                 ),
@@ -80,7 +83,7 @@ class AccountPage extends StatelessWidget {
               padding: EdgeInsets.all(8.0),
             ),
             Text(
-              '더미 유저',
+              user.displayName,
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
             )
@@ -88,26 +91,72 @@ class AccountPage extends StatelessWidget {
         ),
         Padding(
           padding: const EdgeInsets.only(top: 8.0),
-          child: Text(
-            '0\n게시물',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 18.0),
+          child: StreamBuilder<QuerySnapshot>(
+              stream: _postStream(),
+              builder: (context, snapshot) {
+                var post = 0;
+                if (snapshot.hasData) {
+                  post = snapshot.data.documents.length;
+                }
+
+                return Text(
+                  '$post\n게시물',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 18.0),
+                );
+              }
           ),
         ),
         Padding(
           padding: const EdgeInsets.only(top: 8.0),
-          child: Text(
-            '0\n팔로워',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 18.0),
+          child: StreamBuilder<DocumentSnapshot>(
+              stream: _followerStream(),
+              builder: (context, snapshot) {
+                var follower = 0;
+                if (snapshot.hasData) {
+                  var filteredMap;
+                  if (snapshot.data.data == null) {
+                    filteredMap = [];
+                  } else {
+                    filteredMap = snapshot.data.data
+                      ..removeWhere((key, value) => value == false);
+                    // removeWhere 는 void 형태
+                    // Dart에서는 ..으로 원래 객체로 반환 가능
+                  }
+                  follower = filteredMap.length;
+                }
+                return Text(
+                  '$follower\n팔로워',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 18.0),
+                );
+              }
           ),
         ),
         Padding(
           padding: const EdgeInsets.only(top: 8.0),
-          child: Text(
-            '0\n팔로잉',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 18.0),
+          child: StreamBuilder<DocumentSnapshot>(
+              stream: _followingStream(),
+              builder: (context, snapshot) {
+                var following = 0;
+                if (snapshot.hasData) {
+                  var filteredMap;
+                  if (snapshot.data.data == null) {
+                    filteredMap = [];
+                  } else {
+                    filteredMap = snapshot.data.data
+                      ..removeWhere((key, value) => value == false);
+                    // removeWhere 는 void 형태
+                    // Dart에서는 ..으로 원래 객체로 반환 가능
+                  }
+                  following = filteredMap.length;
+                }
+                return Text(
+                  '$following\n팔로잉',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 18.0),
+                );
+              }
           ),
         ),
       ],
@@ -122,7 +171,9 @@ class AccountPage extends StatelessWidget {
           color: Colors.black,
           onPressed: () {
             // 로그아웃
-
+            FirebaseAuth.instance.signOut();
+            _googleSignIn.signOut();
+            // return LoginPage();
           },
         )
       ],
@@ -135,8 +186,28 @@ class AccountPage extends StatelessWidget {
   }
 
   // 내 게시물 가져오기
+  // 하나의 문서는 DocumentSnapshot
+  // 여러개의 문서 QuerySnapshot
+  Stream<QuerySnapshot> _postStream() {
+    return Firestore.instance
+        .collection('post')
+        .where('email', isEqualTo: user.email)  // 내 이메일과 같은 것만
+        .snapshots();
+  }
 
   // 팔로잉 가져오기
+  Stream<DocumentSnapshot> _followingStream() {
+    return Firestore.instance
+        .collection('following')
+        .document(user.email)
+        .snapshots();
+  }
 
   // 팔로워 가져오기
+  Stream<DocumentSnapshot> _followerStream() {
+    return Firestore.instance
+        .collection('follower')
+        .document(user.email)
+        .snapshots();
+  }
 }
