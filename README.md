@@ -1,4 +1,4 @@
-flutter-qr
+# flutter-qr
 
 A new Flutter application.
 
