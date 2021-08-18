@@ -179,8 +179,8 @@ class AccountPage extends StatelessWidget {
       ],
       backgroundColor: Colors.white,
       title: Text(
-        'Instagram Clone',
-        style: GoogleFonts.pacifico(),
+        'QR CODE SCAN',
+        style: GoogleFonts.fredokaOne(),
       ),
     );
   }

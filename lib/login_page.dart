@@ -24,8 +24,8 @@ class LoginPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              'Instagram Clone',
-              style: GoogleFonts.pacifico(
+              'QR CODE SCAN',
+              style: GoogleFonts.fredokaOne(
                 fontSize: 40.0,
               ),
             ),

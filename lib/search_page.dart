@@ -24,8 +24,8 @@ class SearchPage extends StatelessWidget {
   Widget _buildAppBar() {
     return AppBar(
       title: Text(
-        'Instagram Clone',
-        style: GoogleFonts.pacifico(),
+        'QR CODE SCAN',
+        style: GoogleFonts.fredokaOne(),
       ),
     );
   }
