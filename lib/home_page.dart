@@ -1,3 +1,4 @@
+import 'package:chapter10/qr_scan_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -15,11 +16,21 @@ class HomePage extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
           title: Text(
-            'Instagram Clone',
-            style: GoogleFonts.pacifico(),
+            'QR CODE SCAN',
+            style: GoogleFonts.fredokaOne(),
           ),
         ),
-        body: _buildBody());
+        body: _buildBody(),
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: Colors.lightGreen,
+          child: Icon(Icons.qr_code),
+          onPressed: () {
+            print('눌림');
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (BuildContext context) => QrScan(user)));
+          },
+        ),
+    );
   }
 
   Widget _buildBody() {
@@ -44,7 +55,7 @@ class HomePage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              'Instagram에 오신 것을 환영합니다',
+              'QR CODE SCAN',
               style: TextStyle(fontSize: 24.0),
             ),
             Padding(padding: EdgeInsets.all(8.0)),
