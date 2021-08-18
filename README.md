@@ -19,4 +19,3 @@ samples, guidance on mobile development, and a full API reference.
 - C://User/user/.android cmd > keytool -list -v -keystore %USERPROFILE%/.android/debug.keystore -alias androiddebugkey -storepass android -keypass android
 - SHA1 복사 firebase > 프로젝트 설정 > 디지털 지문 추가
 
-# flutter-qr
